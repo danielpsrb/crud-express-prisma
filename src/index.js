@@ -106,6 +106,25 @@ app.patch("/products/:id", async(req, res) => {
     else res.status(500).send("Product update failed")
 })
 
+app.patch("/product/:id", async(req, res, next) => {
+    const productId = req.params.id
+    const productData = req.body
+    
+    const updateProduct = await prisma.product.update({
+        where: {
+            id: productId
+        },
+        data: {
+            name: productData.name,
+            price: productData.price,
+            description: productData.description,
+            images: productData.images
+        }
+    });
+    if(updateProduct) res.status(200).send("Product updated successfully...")
+    else res.status(500).send("Product update failed")
+})
+
 app.listen(PORT, () => {
     console.log("server listening on port " + PORT)
 })
