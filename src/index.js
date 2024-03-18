@@ -55,9 +55,28 @@ app.put("/product/:id", async (req, res) => {
         productData.images
         )
     ) {
-        return res.status(404).send("Some Fields are missing and required")
+        return res.status(400).send("Some Fields are missing and required")
     }
 
+    const updateProduct = await prisma.product.update({
+        where: {
+            id: productId
+        },
+        data: {
+            name: productData.name,
+            price: productData.price,
+            description: productData.description,
+            images: productData.images
+        }
+    });
+    if(updateProduct) res.status(200).send("Product updated successfully...")
+    else res.status(500).send("Product update failed")
+})
+
+app.patch("/product/:id", async(req, res, next) => {
+    const productId = req.params.id
+    const productData = req.body
+    
     const updateProduct = await prisma.product.update({
         where: {
             id: productId
