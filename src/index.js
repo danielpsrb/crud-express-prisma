@@ -55,7 +55,7 @@ app.put("/product/:id", async (req, res) => {
         productData.images
         )
     ) {
-        return res.status(404).send("Some Fields are missing and required")
+        return res.status(400).send("Some Fields are missing and required")
     }
 
     const updateProduct = await prisma.product.update({
