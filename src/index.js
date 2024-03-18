@@ -10,15 +10,29 @@ const PORT = process.env.PORT || 3535
 app.use(express.json());
 
 app.get("/api", (req, res) => {
-    res.send("Welcome to this simple API")
+    res.send("Welcome to this simple API cuyy...")
 })
 
-app.get("/product", async(req, res) => {
+app.get("/products", async(req, res) => {
     const searchProduct = await prisma.product.findMany();
     res.send(searchProduct);
 });
 
-app.post("/product", async(req, res) => {
+app.get("/products/:id", async(req, res) => {
+    const productId = req.params.id
+
+    const searchProduct = await prisma.product.findUnique({
+        where: {
+            id: productId,
+        },
+    })
+
+    if(!searchProduct) res.status(400).send("Product not found")
+
+    if(searchProduct) res.status(200).send(searchProduct)
+})
+
+app.post("/products", async(req, res) => {
     const newProductData = req.body
     const newProduct = await prisma.product.create({
         data: {
@@ -32,7 +46,7 @@ app.post("/product", async(req, res) => {
     else res.status(500).send("Product creation failed")
 })
 
-app.delete("/product/:id", async(req, res) => {
+app.delete("/products/:id", async(req, res) => {
     const productId = req.params.id
     const deleteProduct = await prisma.product.delete({
         where: {
@@ -58,6 +72,25 @@ app.put("/product/:id", async (req, res) => {
         return res.status(400).send("Some Fields are missing and required")
     }
 
+    const updateProduct = await prisma.product.update({
+        where: {
+            id: productId
+        },
+        data: {
+            name: productData.name,
+            price: productData.price,
+            description: productData.description,
+            images: productData.images
+        }
+    });
+    if(updateProduct) res.status(200).send("Product updated successfully...")
+    else res.status(500).send("Product update failed")
+})
+
+app.patch("/products/:id", async(req, res) => {
+    const productId = req.params.id
+    const productData = req.body
+    
     const updateProduct = await prisma.product.update({
         where: {
             id: productId
