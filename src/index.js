@@ -46,6 +46,18 @@ app.delete("/product/:id", async(req, res) => {
 app.put("/product/:id", async (req, res) => {
     const productId = req.params.id
     const productData = req.body
+
+    if(
+        !(
+        productData.name &&
+        productData.price &&
+        productData.description &&
+        productData.images
+        )
+    ) {
+        return res.status(404).send("Some Fields are missing and required")
+    }
+
     const updateProduct = await prisma.product.update({
         where: {
             id: productId
